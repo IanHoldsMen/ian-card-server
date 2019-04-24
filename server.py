@@ -19,7 +19,6 @@ class RequestHandler(BaseHTTPRequestHandler):
     def handleCardsList(self):
         self.send_response(200)
         self.send_header("Content-type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
         db = CardDB()
@@ -40,7 +39,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         db.createCard(name, suit, value)
 
         self.send_response(201)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
     
     def handleCardsUpdate(self, id):
@@ -62,7 +60,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         db.updateCard(id, name, suit, value)
 
         self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
     
     def handleCardsRetrieve(self, id):
@@ -74,7 +71,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(200)
             self.send_header("Content-type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(bytes(json.dumps(card), "utf-8"))
     
@@ -87,7 +83,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         else:
             db.deleteCard(id)
             self.send_response(200)
-            self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
 
     def handleNotFound(self):
@@ -99,7 +94,6 @@ class RequestHandler(BaseHTTPRequestHandler):
        
     def do_OPTIONS(self):
         self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-type")
         self.end_headers()
