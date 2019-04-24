@@ -10,7 +10,7 @@ class CardDB:
         url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
 
         self.connection = psycopg2.connect(
-            cursor_factory=psycopg2.extras.realDictConstructor,
+            cursor_factory=psycopg2.extras.RealDictCursor,
             database=url.path[1:],
             user=url.username,
             password=url.password,
