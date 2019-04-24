@@ -12,44 +12,9 @@ gSessionStore = SessionStore()
 class RequestHandler(BaseHTTPRequestHandler):
 
     def end_headers(self):
-        self.sendCookie()
         self.send_header("Access-Control-Allow-Origin", self.headers["Origin"])
         self.send_header("Access-Control-Allow-Credentials", "true")
         BaseHTTPRequestHandler.end_headers(self)
-
-    def loadCookie(self):
-        if "Cookie" in self.headers:
-            self.cookie = cookies.SimpleCookie(self.headers["Cookie"])
-        else:
-            self.cookie = cookies.SimpleCookie()
- 
-    def sendCookie(self):
-        for morsel in self.cookie:
-            self.send_header("Set-Cookie", morsel.OutputString())
-
-    def loadSession(self):
-        self.loadCookie()
-        if "sessionId" in self.cookie:
-            # Session ID found in the cookie
-            sessionId = self.cookie["sessionId"].value
-            self.session = gSessionStore.getSessionData(sessionId)
-            if self.session == None:
-                # Session ID no longer found in the session store
-                # Create a new session ID
-                sessionId = gSessionStore.createSession()
-                self.session = gSessionStore.getSessionData(sessionId)
-                self.cookie["sessionId"] = sessionId
-        else:
-            # no session ID found in the cookie
-            # create a brand new session ID
-            sessionId = gSessionStore.createSession()
-            self.session = gSessionStore.getSessionData(sessionId)
-            self.cookie["sessionId"] = sessionId
-
-    def isLoggedIn(self):
-        if "userId" in self.session:
-            return True
-        return False
 
     def handleCardsList(self):
         self.send_response(200)
@@ -133,7 +98,6 @@ class RequestHandler(BaseHTTPRequestHandler):
 
        
     def do_OPTIONS(self):
-        self.loadSession()
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -141,7 +105,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_DELETE(self):
-        self.loadSession()
         parts = self.path.split('/')[1:]
         collection = parts[0]
         if len(parts) > 1:
@@ -158,7 +121,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handleNotFound()
 
     def do_PUT(self):
-        self.loadSession()
         parts = self.path.split('/')[1:]
         collection = parts[0]
         if len(parts) > 1:
@@ -175,7 +137,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.handleNotFound()
 
     def do_GET(self):
-        self.loadSession()
         parts = self.path.split('/')[1:]
         collection = parts[0]
         if len(parts) > 1:
@@ -193,7 +154,6 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     
     def do_POST(self):
-        self.loadSession()
         if self.path == "/cards":
             self.handleCardsCreate()
         else:
